@@ -1,4 +1,4 @@
 interface:
   display_name: "Context Engineering"
-  short_description: "Set up agent-ready project context"
-  default_prompt: "Use $context-engineering to set up durable project context for coding agents."
+  short_description: "Reduce repository discovery hops"
+  default_prompt: "Use $context-engineering to make important repository context easier for future agents to find."
