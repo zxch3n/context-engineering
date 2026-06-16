@@ -12,7 +12,7 @@ npx skills add zxch3n/context-engineering
 
 ## Skill
 
-- `context-engineering`: Guides agents to measure discovery hops, document verified repository context, and keep agent-facing docs self-maintaining.
+- `context-engineering`: Guides agents to analyze recent commits, measure discovery hops, document verified repository context, and keep agent-facing docs self-maintaining.
 
 ## Repository Layout
 

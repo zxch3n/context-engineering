@@ -1,6 +1,6 @@
 ---
 name: context-engineering
-description: Optimize a repository's context discoverability for coding agents and reduce token usage. Use when a user asks to set up, audit, or improve context engineering; create or repair AGENTS.md or CLAUDE.md; add context indexes, context articles, specs links, or self-maintaining agent docs; measure cold-start discovery hops; mine repeated repo knowledge from code or git history; or make important repository information reachable by future agents in fewer hops.
+description: Optimize a repository's context discoverability for coding agents and reduce token usage. Use when a user asks to set up, audit, or improve context engineering; create or repair AGENTS.md or CLAUDE.md; add context indexes, context articles, specs links, or self-maintaining agent docs; measure cold-start discovery hops; analyze recent commits to find important repository knowledge future agents need; mine repeated repo knowledge from code or git history; or make important repository information reachable by future agents in fewer hops.
 ---
 
 # Context Engineering
@@ -99,6 +99,86 @@ Look for:
 - High-churn directories without `AGENTS.md`, context articles, or specs coverage.
 
 Rank gaps by `hops * recurrence`. This phase produces a priority list, not doc content. Read current code before documenting anything.
+
+## Recent-Commit Discovery Audit
+
+Use this mode when the user asks what important information should be easier to find based on recent work. Default to the latest 100 non-merge commits unless the user asks for another window.
+
+Goal: identify repo knowledge that recent commits imply agents keep needing, measure how hard a fresh agent would find that knowledge, then report recommendations to the human. Do not write docs in this mode unless the user explicitly asks to apply the recommendations.
+
+1. Mine the recent commits as hypotheses.
+
+```bash
+git log -100 --no-merges --name-only --format= | sort | uniq -c | sort -rn | head -40
+git log -100 --no-merges --format='%h %s' | rg -i 'actually|really|properly|again|still|revert|follow-up|missed|also fix'
+git log -100 --no-merges --format='%h %s%n%b%n---END---'
+```
+
+Look for:
+
+- Files and directories repeatedly changed.
+- Commit subjects that imply correction, missed context, or follow-up fixes.
+- Commit bodies that explain non-obvious constraints.
+- Cross-cutting topics spanning multiple directories.
+- Code areas with repeated changes but no obvious `AGENTS.md`, context article, spec, or README pointer.
+
+2. Convert commit evidence into discovery questions, not answers.
+
+For each candidate, write the question a future agent would ask, such as:
+
+- "Where is auth enforced for this route?"
+- "How does this editor change reach persistence?"
+- "Which module owns this invariant?"
+- "What should not be extended here?"
+
+Keep commit-derived facts labeled as hypotheses. Verify against current code only enough to avoid sending subagents meaningless or stale questions.
+
+3. Measure hops with read-only subagents when available.
+
+Give each subagent the question, not your suspected answer. Use this prompt:
+
+```text
+Cold-start discovery-cost measurement in <repo-root> (branch <branch>).
+You are a fresh agent with no session context.
+
+Start from root AGENTS.md or CLAUDE.md. Follow doc links first. Use grep/read
+code only when docs fail to answer. Count every opened file as one hop.
+
+Question: <question derived from recent commits>
+
+Report:
+1. Hop log.
+2. Verified answer with file paths.
+3. Total discovery hops before the answer was clear.
+4. Which docs helped, which docs misled, and what was missing.
+5. The smallest index/doc addition that would make the answer reachable in <=2-3 hops.
+
+Stay read-only.
+```
+
+4. Rank candidates for the human.
+
+Use this scoring model:
+
+```text
+priority = recurrence evidence * discovery hops * importance
+```
+
+Where importance is a judgment based on user-facing behavior, risk, cross-directory impact, or likelihood that future agents will touch the area again.
+
+5. Report recommendations before editing docs.
+
+Report a table with:
+
+- Candidate knowledge.
+- Commit evidence.
+- Question measured.
+- Current hop count.
+- Docs that helped or misled.
+- Recommended change: root index line, per-dir `AGENTS.md` pointer, `context/<topic>.md`, spec update, or `context/CONTEXT-GAPS.md` entry.
+- Confidence and verification notes.
+
+End with a short "recommended next patch" list. If the user approves implementation, continue with Phase 3 through Phase 5 for the selected items.
 
 ## Phase 3: Verify Before Writing
 
