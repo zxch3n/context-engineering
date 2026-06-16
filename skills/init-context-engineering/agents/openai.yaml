@@ -1,4 +1,0 @@
-interface:
-  display_name: "Init Context Engineering"
-  short_description: "Set up agent-ready project context"
-  default_prompt: "Use $init-context-engineering to set up durable project context for coding agents."

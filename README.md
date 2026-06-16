@@ -12,14 +12,14 @@ npx skills add zxch3n/context-engineering
 
 ## Skill
 
-- `init-context-engineering`: Guides agents to organize `AGENTS.md`, common commands, project conventions, and necessary project-specific skills.
+- `context-engineering`: Guides agents to organize `AGENTS.md`, common commands, project conventions, and necessary project-specific skills.
 
 ## Repository Layout
 
 The skill follows the same `skills/<skill-name>/SKILL.md` shape used by repositories such as `vercel-labs/skills`:
 
 ```text
-skills/init-context-engineering/
+skills/context-engineering/
   SKILL.md
   agents/openai.yaml
 ```

@@ -1,9 +1,9 @@
 ---
-name: init-context-engineering
+name: context-engineering
 description: Initialize or improve durable project context for coding agents. Use when a user asks to set up context engineering in a repository, create or repair AGENTS.md, document agent workflows, capture project commands and conventions, add project-specific skills, or make a repo easier for future agents to work in safely and efficiently.
 ---
 
-# Init Context Engineering
+# Context Engineering
 
 ## Goal
 
